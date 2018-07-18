@@ -203,7 +203,7 @@ for testsubj = 1:numel(xdir)
     threshold_array = 0:0.05:0.95;
     feature_selection_cols_exp = repmat(feature_selection_cols, [numel(threshold_array),1]);
     feature_selection_cols_exp = feature_selection_cols_exp(:)';
-    voronoi_test_features = voronoi_test_features_all(:,feature_selection_cols_exp);
+    voronoi_test_features = voronoi_test_features_all(:,feature_selection_cols_exp>0);
     testmeanbestthrs = predict(RFmodel,voronoi_test_features);
     
     %Assigning the values to the final image

@@ -193,7 +193,7 @@ end
 threshold_array = 0:0.05:0.95;
 feature_selection_cols_exp = repmat(feature_selection_cols, [numel(threshold_array),1]);
 feature_selection_cols_exp = feature_selection_cols_exp(:)';
-voronoi_train_features = voronoi_train_features_all(:,feature_selection_cols_exp);
+voronoi_train_features = voronoi_train_features_all(:,feature_selection_cols_exp>0);
 
 % Training RF regression model
 RFmodel = TreeBagger(1000,voronoi_train_features,trainmaxbestthrs,'Method','Regression',...
