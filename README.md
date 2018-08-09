@@ -11,4 +11,6 @@ LOCATE_testing(test_image_directory_name, train_image_directory_name);
 Example Leave-one-subject-out testing call:
 LOCATE_LOSO_testing(train_image_directory_name);
 
-LOCATE requires the training and test data to be prepared in a specific way for its execution. Kindly refer to the user manual for more information on data preperation and additional options on LOCATE training and testing.
+LOCATE requires the training and test data to be prepared in a
+specific way for its execution. Kindly refer to the user manual
+(LOCATE_User_Manual_V1.1_20052018) for more information on data preperation and additional options on LOCATE training and testing.
