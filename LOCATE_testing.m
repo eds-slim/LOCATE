@@ -79,7 +79,7 @@ catch
     error('Training model not found. Run LOCATE_training first or check the training images directory');
 end
 
-if sum(feature_selection_cols) ~= (RFmodel.NumPredictors/20)
+if sum(feature_selection_cols) ~= (size(RFmodel.X,2)/20)
     error('The number of features selected does not match the features used to train the model. Kindly check your feat_select input or use a different model.');
 end
 

@@ -14,7 +14,7 @@ for nums = 1:size(flairfeatmats,1)
                 feature1(20*(no_feats-1)+1:20*no_feats) = feature11;
                 continue;
             elseif pos1 == 1
-                feature11 = zeros(1,size(feats,2));
+                feature11 = 0.*feature11;
             else
                 value = feature11(pos1-1);
                 feature11(pos1:end) = value;
