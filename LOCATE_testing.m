@@ -7,18 +7,15 @@ function LOCATE_testing(test_image_directory_name, varargin)
 %   test_image_directory_name - directory consisting of test images
 %
 %   Example funtional calls:
-%   1. LOCATE_testing(test_image_directory_name);
-%    - If you have the training images (all the modalities) in the same folder
-%   2. LOCATE_testing(test_image_directory_name, train_image_directory_name);
-%    - If you have the training images are in the seperate directory
-%   3. LOCATE_testing(test_image_directory_name, train_image_directory_name, feat_select);
+%   1. LOCATE_testing(test_image_directory_name, train_image_directory_name);
+%    - Name of the directory where the test and training images are located
+%   2. LOCATE_testing(test_image_directory_name, train_image_directory_name, feature_select);
 %    - If you want to select specific features for training and testing
-%   4. LOCATE_testing(test_image_directory_name, train_image_directory_name, feat_select, verbose);
+%   3. LOCATE_testing(test_image_directory_name, train_image_directory_name, feature_select, verbose);
 % 
 %   Optional inputs (in the order):
-%    - train_image_directory_name - Name of the directory where the training images for feature extraction are located (if not in the same folder)
-%    - feat_select - vector with elements indicating if the feature has to be included or not. Current order is distance from ventricles, lesion volume and other modalities in alphabetical naming order
-%                 (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feat_Select = [0, 1, 1])
+%    - feature_select - vector with elements indicating if the feature has to be included or not. Current order is distance from ventricles, lesion volume and other modalities in alphabetical naming order
+%                 (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feature_select = [0, 1, 1])
 %    - verbose (0 or 1)
 
 addpath('MATLAB');
@@ -54,9 +51,9 @@ numfeats = numel(xfeats);
 feature_selection_cols = ones(numfeats+2,1);
 if nargin > 2
     if numel(varargin{2}) == 1
-        error('Third input (feat_select) must be a vector with number of elements equal to the number of features specified.');
+        error('Third input (feature_select) must be a vector with number of elements equal to the number of features specified.');
     elseif numel(varargin{2}) < numfeats + 2
-        error('Number of columns in feat_select does not match the number of features specified.');
+        error('Number of columns in feature_select does not match the number of features specified.');
     else
         feature_selection_cols = varargin{2};
     end
@@ -80,7 +77,7 @@ catch
 end
 
 if sum(feature_selection_cols) ~= (size(RFmodel.X,2)/20)
-    error('The number of features selected does not match the features used to train the model. Kindly check your feat_select input or use a different model.');
+    error('The number of features selected does not match the features used to train the model. Kindly check your feature_select input or use a different model.');
 end
 
 xdir = dir(sprintf('%s/*_BIANCA_LPM.nii.gz',root_data_directory));
@@ -228,6 +225,11 @@ for testsubj = 1:numel(xdir)
     save_avw(threshold_mask,sprintf('%s/%s_thresholdsmap.nii.gz',results_directory,xsplit{1}),'f',[1 1 1]);
     save_avw(final_binary_lesionmask,sprintf('%s/%s_BIANCA_LOCATE_binarylesionmap.nii.gz',results_directory,xsplit{1}),'f',[1 1 1]);
     save(sprintf('%s/%s_LOCATE_thresholds.mat',results_directory,xsplit{1}),'testmeanbestthrs');
+    
+    copying_image_geometry(lesionmaskfile, sprintf('%s/%s_indexmap.nii.gz',results_directory,xsplit{1}), verbose);
+    copying_image_geometry(lesionmaskfile, sprintf('%s/%s_thresholdsmap.nii.gz',results_directory,xsplit{1}), verbose);
+    copying_image_geometry(lesionmaskfile, sprintf('%s/%s_BIANCA_LOCATE_binarylesionmap.nii.gz',results_directory,xsplit{1}), verbose);
+    
 end
 % Save all the results as a consolidated single folder
 save(sprintf('%s/Consolidated_LOCATE_output.mat',results_directory),'lesion_masks','thresholds','indexmaps','thresholdmap');

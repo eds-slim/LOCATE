@@ -4,18 +4,15 @@ function LOCATE_training(varargin)
 %   Vaanathi Sundaresan - 25/05/2018
 %
 %   Example funtional calls:
-%   1. LOCATE_training();
-%    - If you have the training images (all the modalities) in the same folder
-%   2. LOCATE_training(train_image_directory_name);
-%    - If you have the training images are in the seperate directory
-%   3. LOCATE_training(train_image_directory_name, feat_select);
+%   1. LOCATE_training(train_image_directory_name);
+%    - Name of the directory where the training images for feature extraction are located
+%   2. LOCATE_training(train_image_directory_name, feature_select);
 %    - If you want to select specific features for training and testing
-%   4. LOCATE_training(train_image_directory_name, feat_select, verbose);
+%   3. LOCATE_training(train_image_directory_name, feature_select, verbose);
 % 
 %   Optional inputs (in the order):
-%    - train_image_directory_name - Name of the directory where the training images for feature extraction are located (if not in the same folder)
-%    - feat_select - vector with elements indicating if the feature has to be included or not. Current order is distance from ventricles, lesion volume and other modalities in alphabetical naming order
-%                 (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feat_Select = [0, 1, 1])
+%    - feature_select - vector with elements indicating if the feature has to be included or not. Current order is distance from ventricles, lesion volume and other modalities in alphabetical naming order
+%                 (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feature_select = [0, 1, 1])
 %    - verbose (0 or 1)
 
 addpath('MATLAB');
@@ -27,7 +24,12 @@ if nargin > 0
 end
 % Assigning the Root directories
 root_data_directory = training_image_directory_name;
-results_directory = training_image_directory_name;
+results_directory = sprintf('%s/LOCATE_training_files',training_image_directory_name);
+
+% Creating the results directory
+if ~exist(results_directory)
+    mkdir(results_directory)
+end
 
 xdir = dir(sprintf('%s/*_BIANCA_LPM.nii.gz',root_data_directory));
 if numel(xdir) == 0
@@ -45,9 +47,9 @@ numfeats = numel(xfeats);
 feature_selection_cols = ones(numfeats+2,1);
 if nargin > 1
     if numel(varargin{2}) == 1
-        error('Second input (feat_select) must be a vector with number of elements equal to the number of features specified.');
+        error('Second input (feature_select) must be a vector with number of elements equal to the number of features specified.');
     elseif numel(varargin{2}) < numfeats + 2
-        error('Number of columns in feat_select does not match the number of features specified.');
+        error('Number of columns in feature_select does not match the number of features specified.');
     else
         feature_selection_cols = varargin{2};
     end
