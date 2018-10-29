@@ -1,15 +1,15 @@
-function LOCATE_LOSO_testing(varargin)
+function LOCATE_LOO_testing(varargin)
 % Function for extracting  features from the images in a directory 
 % and performing Leave-one-subject-out testing for LOCATE
 %   Copyright - FMRIB, WIN, University of Oxford
 %   Vaanathi Sundaresan - 25/05/2018
 %
 %   Example funtional calls:
-%   1. LOCATE_LOSO_testing(train_image_directory_name);
-%    - Name of the directory where images for LOSO evaluation are located
-%   2. LOCATE_LOSO_testing(train_image_directory_name, feature_select);
+%   1. LOCATE_LOO_testing(train_image_directory_name);
+%    - Name of the directory where images for LOO evaluation are located
+%   2. LOCATE_LOO_testing(train_image_directory_name, feature_select);
 %    - If you want to select specific features for training and testing
-%   3. LOCATE_LOSO_testing(train_image_directory_name, feature_select, verbose);
+%   3. LOCATE_LOO_testing(train_image_directory_name, feature_select, verbose);
 % 
 %   Optional inputs (in the order):
 %    - feature_select - vector with elements indicating if the feature has to be included or not. Current order is distance from ventricles, lesion volume and other modalities in alphabetical naming order
@@ -26,7 +26,7 @@ end
 
 % Assigning the Root directories
 root_data_directory = training_image_directory_name;
-results_directory = sprintf('%s/LOCATE_LOSO_results_directory',training_image_directory_name);
+results_directory = sprintf('%s/LOCATE_LOO_results_directory',training_image_directory_name);
 
 xdir = dir(sprintf('%s/*_BIANCA_LPM.nii.gz',root_data_directory));
 if numel(xdir) == 0
@@ -219,7 +219,7 @@ for testsubj = 1:numel(xdir)
 
     % Training RF regression model using all the feataures except the test
     % subject
-    RFmodel_LOSO = TreeBagger(1000,voronoi_train_features,trainmaxbestthrs,'Method','Regression',...
+    RFmodel_LOO = TreeBagger(1000,voronoi_train_features,trainmaxbestthrs,'Method','Regression',...
         'numPredictorsToSample','all');
     if verbose
         fprintf('Training done! \n');
@@ -239,7 +239,7 @@ for testsubj = 1:numel(xdir)
     feature_selection_cols_exp = repmat(feature_selection_cols, [numel(threshold_array),1]);
     feature_selection_cols_exp = feature_selection_cols_exp(:)';
     voronoi_test_features = voronoi_test_features_all(:,feature_selection_cols_exp>0);
-    testmeanbestthrs = predict(RFmodel_LOSO,voronoi_test_features);
+    testmeanbestthrs = predict(RFmodel_LOO,voronoi_test_features);
     
     %Assigning the values to the final image
     final_binary_lesionmask = zeros(size(lesionmask));
