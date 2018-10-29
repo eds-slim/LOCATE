@@ -71,7 +71,7 @@ end
 
 % Loading the Trained Regression model
 try
-    load(sprintf('%s/RF_regression_model_LOCATE.mat',train_image_directory_name));
+    load(sprintf('%s/LOCATE_training_files/RF_regression_model_LOCATE.mat',train_image_directory_name));
 catch
     error('Training model not found. Run LOCATE_training first or check the training images directory');
 end
