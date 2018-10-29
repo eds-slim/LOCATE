@@ -2,6 +2,12 @@ LOCATE - LOCally Adaptive Threshold Estimation (https://www.biorxiv.org/content/
 
 Estimating the threshold adaptively for the white matter lesion probability maps obtained from BIANCA (refer to https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/BIANCA/Userguide for more details)
 
+To run LOCATE on your machine, clone the git repository in your working directory. To do this, open your terminal and type the following command in your working directory:
+
+git clone https://git.fmrib.ox.ac.uk/vaanathi/LOCATE-BIANCA
+
+Please ensure that you have FSL installed in your machine and the following environment variables/paths are correctly set in your system by typing the following commands in your terminal and check if they provide similar output:
+
 Example training call:
 LOCATE_training(train_image_directory_name);
 
