@@ -82,7 +82,7 @@ for subj = 1:numel(xdir)
     end
     
     xsplit = regexp(xdir(subj).name,'_BIANCA_LPM','split');
-    xfeats = dir(sprintf('Test/%s_feature_*',xsplit{1}));
+    xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory,xsplit{1}));
     flairimage = cell(numel(xfeats),1);
     % Loading the image files
     lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',root_data_directory,xsplit{1});
