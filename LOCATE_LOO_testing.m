@@ -13,7 +13,7 @@ function LOCATE_LOO_testing(varargin)
 % 
 %   Optional inputs (in the order):
 %    - feature_select - vector with elements indicating if the feature has to be included or not. Current order is distance from ventricles, lesion volume and other modalities in alphabetical naming order
-%                 (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feature_select = [0, 1, 1])
+%                  (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feature_select = [0, 1, 1])
 %    - verbose (0 or 1)
 
 addpath('MATLAB');
