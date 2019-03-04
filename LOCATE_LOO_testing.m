@@ -147,17 +147,16 @@ for subj = 1:numel(xdir)
         if verbose
             fprintf('LOCATE features extracted! \n')
         end
-
-        % Storing the features in a cell array
-        imgfeatmats{subj} = flairintfeats;
-        ventdistfeatmats{subj} = ventdistfeats;
-        lesvolfeatmats{subj} = lesvolfeats;
-        minbestthrs{subj} = minbestthr_values;
-        maxbestthrs{subj} = maxbestthr_values;
-        meanbestthrs{subj} = meanbestthr_values;
-        index_indices_list{subj} = index_numbers;
-        index_maps{subj} = index_mask;
     end
+    % Storing the features in a cell array
+    imgfeatmats{subj} = flairintfeats;
+    ventdistfeatmats{subj} = ventdistfeats;
+    lesvolfeatmats{subj} = lesvolfeats;
+    minbestthrs{subj} = minbestthr_values;
+    maxbestthrs{subj} = maxbestthr_values;
+    meanbestthrs{subj} = meanbestthr_values;
+    index_indices_list{subj} = index_numbers;
+    index_maps{subj} = index_mask;
     
     % Saving the features as an intermediate results .mat file
     save(sprintf('%s/LOCATE_features_%s.mat',...
