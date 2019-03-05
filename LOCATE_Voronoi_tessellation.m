@@ -66,8 +66,8 @@ function [lesionmask, index_mask, index_numbers] =  LOCATE_Voronoi_tessellation(
     % Resizing the images back to the original dimensions
     lesionmask = imresizen(lesionmask,inv_factor);
     biancamask = imresizen(single(biancamask),inv_factor);
-    index_mask = imresizen(index_mask,inv_factor);
-    index_mask = round(index_mask);
+    index_mask = imresizen(index_mask,inv_factor,'nearest');
+    % index_mask = round(index_mask);
     index_mask = index_mask.*(biancamask);
     index_numbers = setdiff(union(index_mask(:),[]),0);
     
