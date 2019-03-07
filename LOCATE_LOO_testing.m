@@ -126,7 +126,7 @@ for subj = 1:numel(xdir)
 
         % Getting image dimensions and determining up/downsampling factor
         dim = size(lesionmask);
-        factor = floor(max(dim)./dim);
+        factor = 150./dim;%floor(max(dim)./dim);
         inv_factor = 1./factor;
 
         % Up/downsampling the images
