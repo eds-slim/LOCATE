@@ -130,16 +130,23 @@ for subj = 1:numel(xdir)
         inv_factor = 1./factor;
 
         % Up/downsampling the images
-        lesionmask = imresizen(lesionmask,factor);
+        lesionmask_resized = imresizen(lesionmask,factor);
         biancamask = imresizen(single(biancamask),factor);
         brainmask = imresizen(single(brainmask),factor);
         biancamask = (biancamask>0) & (brainmask>0);  
 
         % Performing Voronoi tessellation on resampled images
-        [lesionmask, index_mask, index_numbers] = LOCATE_Voronoi_tessellation(lesionmask, biancamask, inv_factor);
+        [~, index_mask, index_numbers] = LOCATE_Voronoi_tessellation_resized(lesionmask_resized, biancamask, inv_factor);
         if verbose
             fprintf('Voronoi Tessellation done! \n')
         end
+        numel(index_numbers)
+        
+        index_mask = imresizen(index_mask,inv_factor,'nearest');
+        if verbose
+            fprintf('Resizing of Index mask done! \n')
+        end
+        index_numbers = setdiff(union(index_mask(:),[]),0);
         numel(index_numbers)
         % Extractng features from Voronoi regions individually 
         [flairintfeats, ventdistfeats, lesvolfeats, minbestthr_values, maxbestthr_values, meanbestthr_values, index_numbers, index_mask] ...
