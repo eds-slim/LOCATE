@@ -121,7 +121,7 @@ for subj = 1:numel(xdir)
         
         % Getting image dimensions and determining up/downsampling factor
         dim = size(lesionmask);
-        factor = floor(max(dim)./dim);
+        factor = 150./dim;%floor(max(dim)./dim);
         inv_factor = 1./factor;
         
         % Up/downsampling the images
@@ -131,7 +131,7 @@ for subj = 1:numel(xdir)
         biancamask = (biancamask>0) & (brainmask>0);  
     
         % Performing Voronoi tessellation on resampled images
-        [lesionmask, index_mask, index_numbers] = LOCATE_Voronoi_tessellation(lesionmask, biancamask, inv_factor);
+        [lesionmask, index_mask, index_numbers] = LOCATE_Voronoi_tessellation_resized(lesionmask, biancamask, inv_factor);
         if verbose
             fprintf('Voronoi Tessellation done! \n')
         end
