@@ -80,61 +80,68 @@ for subj = 1:numel(xdir)
     end
     
     xsplit = regexp(xdir(subj).name,'_BIANCA_LPM','split');
-    xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory,xsplit{1}));
-    flairimage = cell(numel(xfeats),1);
-    % Loading the image files
-    lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',root_data_directory,xsplit{1});
-    manualmaskfile = sprintf('%s/%s_manualmask.nii.gz',root_data_directory,xsplit{1});    
-    biancamaskfile = sprintf('%s/%s_biancamask.nii.gz',root_data_directory,xsplit{1});
-    brainmaskfile = sprintf('%s/%s_brainmask.nii.gz',root_data_directory,xsplit{1});
-    lesionmask = read_avw(lesionmaskfile);
-    manualmask = read_avw(manualmaskfile);    
-    biancamask = read_avw(biancamaskfile);
-    brainmask = read_avw(brainmaskfile);
     
-    if feature_selection_cols(1) == 0   
-        try 
+    does_file_exist = exist(sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1}),'file');
+    
+    if does_file_exist == 2
+        load(sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1}))
+    else
+        xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory,xsplit{1}));
+        flairimage = cell(numel(xfeats),1);
+        % Loading the image files
+        lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',root_data_directory,xsplit{1});
+        manualmaskfile = sprintf('%s/%s_manualmask.nii.gz',root_data_directory,xsplit{1});    
+        biancamaskfile = sprintf('%s/%s_biancamask.nii.gz',root_data_directory,xsplit{1});
+        brainmaskfile = sprintf('%s/%s_brainmask.nii.gz',root_data_directory,xsplit{1});
+        lesionmask = read_avw(lesionmaskfile);
+        manualmask = read_avw(manualmaskfile);    
+        biancamask = read_avw(biancamaskfile);
+        brainmask = read_avw(brainmaskfile);
+        
+        if feature_selection_cols(1) == 0   
+            try 
+                ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',root_data_directory,xsplit{1});
+                ventdistmap = read_avw(ventdistmapfile);
+            catch
+                ventdistmap = zeros(size(lesionmask));
+            end
+        else
             ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',root_data_directory,xsplit{1});
             ventdistmap = read_avw(ventdistmapfile);
-        catch
-            ventdistmap = zeros(size(lesionmask));
         end
-    else
-        ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',root_data_directory,xsplit{1});
-        ventdistmap = read_avw(ventdistmapfile);
-    end
+        
+        for subj_feat_no = 1:numel(xfeats)
+            flairimagefile = sprintf('%s/%s',root_data_directory,xfeats(subj_feat_no).name);
+            flairimage{subj_feat_no} = read_avw(flairimagefile);
+        end 
+        
+        if verbose
+            fprintf('All specified feature image modalities loaded \n');
+        end
+        
+        % Getting image dimensions and determining up/downsampling factor
+        dim = size(lesionmask);
+        factor = floor(max(dim)./dim);
+        inv_factor = 1./factor;
+        
+        % Up/downsampling the images
+        lesionmask = imresizen(lesionmask,factor);
+        biancamask = imresizen(single(biancamask),factor);
+        brainmask = imresizen(single(brainmask),factor);
+        biancamask = (biancamask>0) & (brainmask>0);  
     
-    for subj_feat_no = 1:numel(xfeats)
-        flairimagefile = sprintf('%s/%s',root_data_directory,xfeats(subj_feat_no).name);
-        flairimage{subj_feat_no} = read_avw(flairimagefile);
-    end 
-    
-    if verbose
-        fprintf('All specified feature image modalities loaded \n');
-    end
-    
-    % Getting image dimensions and determining up/downsampling factor
-    dim = size(lesionmask);
-    factor = floor(max(dim)./dim);
-    inv_factor = 1./factor;
-    
-    % Up/downsampling the images
-    lesionmask = imresizen(lesionmask,factor);
-    biancamask = imresizen(single(biancamask),factor);
-    brainmask = imresizen(single(brainmask),factor);
-    biancamask = (biancamask>0) & (brainmask>0);  
-    
-    % Performing Voronoi tessellation on resampled images
-    [lesionmask, index_mask, index_numbers] = LOCATE_Voronoi_tessellation(lesionmask, biancamask, inv_factor);
-    if verbose
-        fprintf('Voronoi Tessellation done! \n')
-    end
-    numel(index_numbers)
-    % Extractng features from Voronoi regions individually 
-    [flairintfeats, ventdistfeats, lesvolfeats, minbestthr_values, maxbestthr_values, meanbestthr_values, index_numbers, index_mask] ...
-        = LOCATE_feature_extraction(lesionmask, ventdistmap, flairimage, manualmask, index_mask, index_numbers);
-    if verbose
-        fprintf('LOCATE features extracted! \n')
+        % Performing Voronoi tessellation on resampled images
+        [lesionmask, index_mask, index_numbers] = LOCATE_Voronoi_tessellation(lesionmask, biancamask, inv_factor);
+        if verbose
+            fprintf('Voronoi Tessellation done! \n')
+        end
+        numel(index_numbers)
+        % Extractng features from Voronoi regions individually 
+        [flairintfeats, ventdistfeats, lesvolfeats, minbestthr_values, maxbestthr_values, meanbestthr_values, index_numbers, index_mask] ...
+            = LOCATE_feature_extraction(lesionmask, ventdistmap, flairimage, manualmask, index_mask, index_numbers);
+        if verbose
+            fprintf('LOCATE features extracted! \n')
+        end
     end
 
     % Storing the features in a cell array
