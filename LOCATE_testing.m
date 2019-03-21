@@ -155,6 +155,12 @@ for subj = 1:numel(xdir)
         end
     end
     
+    flairintfeats = single(flairintfeats);
+    ventdistfeats = single(ventdistfeats);
+    lesvolfeats = single(lesvolfeats);
+    index_numbers = single(index_numbers);
+    index_mask = single(index_mask);
+    
     % Storing the features in a cell array
     imgfeatmats{subj} = flairintfeats;
     ventdistfeatmats{subj} = ventdistfeats;
