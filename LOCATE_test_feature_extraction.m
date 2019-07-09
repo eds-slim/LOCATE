@@ -11,7 +11,11 @@ function [flairintfeats, ventdistfeats, lesvolfeats, index_numbers, index_mask] 
 %   index_numbers - Voronoi tessellation region indices
 
     thresholds = 0:0.05:0.95;    
-    
+    fprintf('Extra details');
+    size(lesionmask)
+    numel(flairimage)
+    size(index_mask)
+    numel(thresholds)
     flairintfeats = zeros(numel(index_numbers),numel(thresholds)*numel(flairimage));
     ventdistfeats = zeros(numel(index_numbers),numel(thresholds));
     lesvolfeats = zeros(numel(index_numbers),numel(thresholds));
@@ -27,6 +31,9 @@ function [flairintfeats, ventdistfeats, lesvolfeats, index_numbers, index_mask] 
             binary_lesion_mask = lesionmask_voronoi > thresholds(thr);
             for img_no = 1:numel(flairimage)
                 flair_image = flairimage{img_no};
+                size(flair_image)
+                size(flairint_values)
+		size(binary_lesion_mask)
                 flairint_values(img_no,thr) = mean(flair_image(binary_lesion_mask));
             end
             ventdist_values(thr) = mean(ventdistmap(binary_lesion_mask));
