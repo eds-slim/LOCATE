@@ -24,6 +24,8 @@ if nargin > 0
     training_image_directory_name = varargin{1};
 end
 
+test_image_directory_name = varargin{2};
+
 % Assigning the Root directories
 root_data_directory = test_image_directory_name;
 results_directory = sprintf('%s/LOCATE_results_directory',test_image_directory_name);
@@ -54,7 +56,7 @@ if nargin > 2
     elseif numel(varargin{2}) < numfeats + 2
         error('Number of columns in feature_select does not match the number of features specified.');
     else
-        feature_selection_cols = varargin{2};
+        feature_selection_cols = varargin{3};
     end
 end
 
