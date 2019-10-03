@@ -1,4 +1,4 @@
-function LOCATE_testing_highdim(varargin)
+function LOCATE_testing_highdim(test_image_directory_name, varargin)
 % Function for extracting  features from the images in a directory 
 % and performing Leave-one-subject-out testing for LOCATE
 %   Copyright - FMRIB, WIN, University of Oxford
@@ -23,8 +23,6 @@ training_image_directory_name = pwd;
 if nargin > 0
     training_image_directory_name = varargin{1};
 end
-
-test_image_directory_name = varargin{2};
 
 % Assigning the Root directories
 root_data_directory = test_image_directory_name;
@@ -56,7 +54,7 @@ if nargin > 2
     elseif numel(varargin{2}) < numfeats + 2
         error('Number of columns in feature_select does not match the number of features specified.');
     else
-        feature_selection_cols = varargin{3};
+        feature_selection_cols = varargin{2};
     end
 end
 
