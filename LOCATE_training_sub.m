@@ -81,10 +81,9 @@ for subj = 1:numel(xdir)
     
     xsplit = regexp(xdir(subj).name,'_BIANCA_LPM','split');
     
-    does_file_exist = exist(sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1}),'file');
-    
-    if does_file_exist == 2
-        load(sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1}))
+    features_fn = sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1});    
+    if exist(features_fn,'file')
+        load(features_fn)
     else
         xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory,xsplit{1}));
         flairimage = cell(numel(xfeats),1);
@@ -166,9 +165,10 @@ for subj = 1:numel(xdir)
     index_maps{subj} = index_mask;
     
     % Saving the features as an intermediate results .mat file
-    save(sprintf('%s/LOCATE_features_%s.mat',...
-        results_directory,xsplit{1}),'flairintfeats',...
-    'ventdistfeats','lesvolfeats','minbestthr_values','maxbestthr_values','meanbestthr_values','index_numbers','index_mask');
+    save(exist(features_fn,'file'),...
+        'flairintfeats', 'ventdistfeats', 'lesvolfeats',...
+        'minbestthr_values', 'maxbestthr_values', 'meanbestthr_values',...
+        'index_numbers','index_mask');
     
 end
 % Saving the array as an intermediate results .mat file
@@ -178,7 +178,11 @@ save(sprintf('%s/LOCATE_features.mat',results_directory),'imgfeatmats',...
 if verbose
     fprintf('LOCATE features saved! \n')
 end
-% Loading the features (not needed) if run on a local system (can aslo
+
+error('first part of script ends here')
+
+
+% Loading the features (not needed) if run on a local system (can also
 % resumed from this step onwards if you already have features saved in above format
 % as 'LOCATE_features.mat'
 load(sprintf('%s/LOCATE_features.mat',results_directory))

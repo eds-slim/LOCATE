@@ -178,7 +178,11 @@ save(sprintf('%s/LOCATE_features.mat',results_directory),'imgfeatmats',...
 if verbose
     fprintf('LOCATE features saved! \n')
 end
-% Loading the features (not needed) if run on a local system (can aslo
+
+error('first part of script ends here')
+
+
+% Loading the features (not needed) if run on a local system (can also
 % resumed from this step onwards if you already have features saved in above format
 % as 'LOCATE_features.mat'
 load(sprintf('%s/LOCATE_features.mat',results_directory))

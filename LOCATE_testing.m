@@ -198,7 +198,8 @@ for testsubj = 1:numel(xdir)
     xsplit = regexp(xdir(testsubj).name,'_BIANCA_LPM','split');
     lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',root_data_directory,xsplit{1}); 
     lesionmask = read_avw(lesionmaskfile);
-    
+    lesionmask = imresizen(lesionmask,factor);
+
     % Extract the corresponding test features and index masks from cell
     % arrays
     testflairfeatmat = imgfeatmats{testsubj};
