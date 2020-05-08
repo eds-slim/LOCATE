@@ -31,8 +31,8 @@ function [flairintfeats, ventdistfeats, lesvolfeats, index_numbers, index_mask] 
             binary_lesion_mask = lesionmask_voronoi > thresholds(thr);
             for img_no = 1:numel(flairimage)
                 flair_image = flairimage{img_no};
-                size(flair_image)
-                size(flairint_values)
+                fprintf('size(flair_image): %f\n', size(flair_image))
+                fprintf('size(flairint_values): %f\n', size(flairint_values))
 		size(binary_lesion_mask)
                 flairint_values(img_no,thr) = mean(flair_image(binary_lesion_mask));
             end

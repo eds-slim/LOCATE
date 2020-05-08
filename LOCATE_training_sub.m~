@@ -15,13 +15,12 @@ function LOCATE_training(varargin)
 %                 (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feature_select = [0, 1, 1])
 %    - verbose (0 or 1)
 
-addpath('MATLAB');
-
 training_image_directory_name = pwd;
 
 if nargin > 0
     training_image_directory_name = varargin{1};
 end
+
 % Assigning the Root directories
 root_data_directory = training_image_directory_name;
 results_directory = sprintf('%s/LOCATE_training_files',training_image_directory_name);
@@ -81,10 +80,9 @@ for subj = 1:numel(xdir)
     
     xsplit = regexp(xdir(subj).name,'_BIANCA_LPM','split');
     
-    does_file_exist = exist(sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1}),'file');
-    
-    if does_file_exist == 2
-        load(sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1}))
+    features_fn = sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1});    
+    if exist(features_fn,'file')
+        load(features_fn)
     else
         xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory,xsplit{1}));
         flairimage = cell(numel(xfeats),1);
@@ -166,9 +164,10 @@ for subj = 1:numel(xdir)
     index_maps{subj} = index_mask;
     
     % Saving the features as an intermediate results .mat file
-    save(sprintf('%s/LOCATE_features_%s.mat',...
-        results_directory,xsplit{1}),'flairintfeats',...
-    'ventdistfeats','lesvolfeats','minbestthr_values','maxbestthr_values','meanbestthr_values','index_numbers','index_mask');
+    save(exist(features_fn,'file'),...
+        'flairintfeats', 'ventdistfeats', 'lesvolfeats',...
+        'minbestthr_values', 'maxbestthr_values', 'meanbestthr_values',...
+        'index_numbers','index_mask');
     
 end
 % Saving the array as an intermediate results .mat file

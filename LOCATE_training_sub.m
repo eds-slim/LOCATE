@@ -1,4 +1,4 @@
-function LOCATE_training(varargin)
+function LOCATE_training_sub(varargin)
 % Function for extracting  features from the images in a directory and training for LOCATE
 %   Copyright - FMRIB, WIN, University of Oxford
 %   Vaanathi Sundaresan - 25/05/2018
@@ -15,28 +15,26 @@ function LOCATE_training(varargin)
 %                 (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feature_select = [0, 1, 1])
 %    - verbose (0 or 1)
 
-addpath('MATLAB');
-
 training_image_directory_name = pwd;
 
 if nargin > 0
     training_image_directory_name = varargin{1};
 end
+
 % Assigning the Root directories
-root_data_directory = training_image_directory_name;
 results_directory = sprintf('%s/LOCATE_training_files',training_image_directory_name);
 
 % Creating the results directory
-if ~exist(results_directory)
+if ~exist(results_directory, 'dir')
     mkdir(results_directory)
 end
 
-xdir = dir(sprintf('%s/*_BIANCA_LPM.nii.gz',root_data_directory));
+xdir = dir(sprintf('%s/*_BIANCA_LPM.nii.gz',training_image_directory_name));
 if numel(xdir) == 0
     error('Cannot find any input image. Please check your training_image_directoy_name');
 else
     xsplit = regexp(xdir(1).name,'_BIANCA_LPM','split');
-    xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory,xsplit{1}));
+    xfeats = dir(sprintf('%s/%s_feature_*',training_image_directory_name,xsplit{1}));
     if numel(xfeats) == 0
         fprintf('Warning: No feature modality found. Can extract only volume and ventricle distance \n');
     end
@@ -85,13 +83,13 @@ for subj = 1:numel(xdir)
     if exist(features_fn,'file')
         load(features_fn)
     else
-        xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory,xsplit{1}));
+        xfeats = dir(sprintf('%s/%s_feature_*',training_image_directory_name,xsplit{1}));
         flairimage = cell(numel(xfeats),1);
         % Loading the image files
-        lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',root_data_directory,xsplit{1});
-        manualmaskfile = sprintf('%s/%s_manualmask.nii.gz',root_data_directory,xsplit{1});    
-        biancamaskfile = sprintf('%s/%s_biancamask.nii.gz',root_data_directory,xsplit{1});
-        brainmaskfile = sprintf('%s/%s_brainmask.nii.gz',root_data_directory,xsplit{1});
+        lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',training_image_directory_name,xsplit{1});
+        manualmaskfile = sprintf('%s/%s_manualmask.nii.gz',training_image_directory_name,xsplit{1});    
+        biancamaskfile = sprintf('%s/%s_biancamask.nii.gz',training_image_directory_name,xsplit{1});
+        brainmaskfile = sprintf('%s/%s_brainmask.nii.gz',training_image_directory_name,xsplit{1});
         lesionmask = read_avw(lesionmaskfile);
         manualmask = read_avw(manualmaskfile);    
         biancamask = read_avw(biancamaskfile);
@@ -99,18 +97,18 @@ for subj = 1:numel(xdir)
 
         if feature_selection_cols(1) == 0   
             try 
-                ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',root_data_directory,xsplit{1});
+                ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',training_image_directory_name,xsplit{1});
                 ventdistmap = read_avw(ventdistmapfile);
             catch
                 ventdistmap = zeros(size(lesionmask));
             end
         else
-            ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',root_data_directory,xsplit{1});
+            ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',training_image_directory_name,xsplit{1});
             ventdistmap = read_avw(ventdistmapfile);
         end
         
         for subj_feat_no = 1:numel(xfeats)
-            flairimagefile = sprintf('%s/%s',root_data_directory,xfeats(subj_feat_no).name);
+            flairimagefile = sprintf('%s/%s',training_image_directory_name,xfeats(subj_feat_no).name);
             flairimage{subj_feat_no} = read_avw(flairimagefile);
         end 
         
@@ -120,7 +118,7 @@ for subj = 1:numel(xdir)
         
         % Getting image dimensions and determining up/downsampling factor
         dim = size(lesionmask);
-        factor = 150./dim;%floor(max(dim)./dim);
+        factor = 150./dim; %floor(max(dim)./dim); %
         inv_factor = 1./factor;
         
         % Up/downsampling the images
@@ -128,8 +126,9 @@ for subj = 1:numel(xdir)
         biancamask = imresizen(single(biancamask),factor);
         brainmask = imresizen(single(brainmask),factor);
         biancamask = (biancamask>0) & (brainmask>0);  
-        manualmask = imresizen(single(manualmask),factor);
+        %manualmask = imresizen(single(manualmask),factor);
         
+
         
         % Performing Voronoi tessellation on resampled images
         [lesionmask, index_mask, index_numbers] = LOCATE_Voronoi_tessellation_resized(lesionmask, biancamask, inv_factor);
@@ -137,6 +136,7 @@ for subj = 1:numel(xdir)
             fprintf('Voronoi Tessellation done! \n')
         end
         numel(index_numbers)
+
         % Extractng features from Voronoi regions individually 
         [flairintfeats, ventdistfeats, lesvolfeats, minbestthr_values, maxbestthr_values, meanbestthr_values, index_numbers, index_mask] ...
             = LOCATE_feature_extraction(lesionmask, ventdistmap, flairimage, manualmask, index_mask, index_numbers);
@@ -165,7 +165,7 @@ for subj = 1:numel(xdir)
     index_maps{subj} = index_mask;
     
     % Saving the features as an intermediate results .mat file
-    save(exist(features_fn,'file'),...
+    save(features_fn,...
         'flairintfeats', 'ventdistfeats', 'lesvolfeats',...
         'minbestthr_values', 'maxbestthr_values', 'meanbestthr_values',...
         'index_numbers','index_mask');
@@ -179,7 +179,7 @@ if verbose
     fprintf('LOCATE features saved! \n')
 end
 
-error('first part of script ends here')
+%error('first part of script ends here')
 
 
 % Loading the features (not needed) if run on a local system (can also

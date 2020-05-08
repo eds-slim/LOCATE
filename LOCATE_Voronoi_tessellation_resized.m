@@ -10,6 +10,9 @@ function [lesionmask, index_mask, index_numbers] =  LOCATE_Voronoi_tessellation_
 
     % Smoothing the images with Gaussian kernel to remove spurious lesion
     % voxels
+  
+    global temp
+    
     lesionmask_smooth = imgaussfilt3(lesionmask,1,'FilterSize',5);
     
     % Determine local maxima of the lesion mask
@@ -32,7 +35,8 @@ function [lesionmask, index_mask, index_numbers] =  LOCATE_Voronoi_tessellation_
     voronoi_area = zeros(1,size(indices,1)-size(regmax_centroid_dummy,1));
     
     % Iterating over voronoi regions
-    for ind = size(regmax_centroid_dummy,1)+1:size(indices,1) %        
+    for ind = size(regmax_centroid_dummy,1)+1:size(indices,1) %
+        waitbar(ind/size(indices,1))
         temp = zeros(size(lesionmask));
         reqd_indices = indices{ind};
         reqd_indices(reqd_indices == 1) = [];
@@ -41,6 +45,7 @@ function [lesionmask, index_mask, index_numbers] =  LOCATE_Voronoi_tessellation_
         reqd_vertices2 = reqd_vertices(:,2);
         reqd_vertices3 = reqd_vertices(:,3);
 
+        
         reqd_vertices1 = max(reqd_vertices1,ones(numel(reqd_vertices1),1));
         reqd_vertices1 = min(reqd_vertices1,size(lesionmask,2).*ones(numel(reqd_vertices1),1));
         reqd_vertices2 = max(reqd_vertices2,ones(numel(reqd_vertices1),1));
@@ -53,23 +58,28 @@ function [lesionmask, index_mask, index_numbers] =  LOCATE_Voronoi_tessellation_
             temp(reqd_vertices(num,2),reqd_vertices(num,1), reqd_vertices(num,3)) = 1;
         end
         
+
+        
         % And forming voronoi regions (as convex hulls)
+
         voronoi_region_mask = bwconvhull3d(temp);
+
         voronoi_region_mask = voronoi_region_mask & biancamask;
         voronoi_region_mask(index_mask>0) = 0;
         index = voronoi_region_mask.*(ind-size(regmax_centroid_dummy,1));
         % Forming Voronoi index maps
         index_mask = index_mask + index;
         voronoi_area(ind-size(regmax_centroid_dummy,1)) = sum(voronoi_region_mask(:));
+        
+
     end
-%     indexmask = index_mask;
-%     % Resizing the images back to the original dimensions
-%     lesionmask = imresizen(lesionmask,inv_factor);
-%     biancamask = imresizen(single(biancamask),inv_factor);
-%     index_mask = imresizen(index_mask,inv_factor,'nearest');
-%     index_mask = round(index_mask);
-%     index_mask = index_mask.*(biancamask);
-    index_numbers = setdiff(union(index_mask(:),[]),0);
+     % Resizing the images back to the original dimensions
+     lesionmask = imresizen(lesionmask,inv_factor);
+     biancamask = imresizen(single(biancamask),inv_factor);
+     index_mask = imresizen(index_mask,inv_factor,'nearest');
+     index_mask = round(index_mask);
+     index_mask = index_mask.*(biancamask);
+     index_numbers = setdiff(union(index_mask(:),[]),0);
     
 end
 
