@@ -140,7 +140,7 @@ voronoi_train_features_all = [trainventdistfeatmat,trainlesvolfeatmat,trainflair
 if verbose
     fprintf('Voronoi training features has been collected! \n');
 end
-threshold_array = 0:0.05:0.95;
+threshold_array = dlmread('thresholds.dat');
 feature_selection_cols_exp = repmat(feature_selection_cols, [numel(threshold_array),1]);
 feature_selection_cols_exp = feature_selection_cols_exp(:)';
 voronoi_train_features = voronoi_train_features_all(:,feature_selection_cols_exp>0);

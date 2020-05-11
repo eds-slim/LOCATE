@@ -10,8 +10,8 @@ function [flairintfeats, ventdistfeats, lesvolfeats, minbestthr_values, maxbestt
 %   index_mask - Voronoi tessellation index mask
 %   manualmask - sumal segmentation
 %   index_numbers - Voronoi tessellation region indices        
-    thresholds = 0:0.05:0.95;
-    
+    thresholds = dlmread('thresholds.dat');
+
     flairintfeats = zeros(numel(index_numbers),numel(thresholds)*numel(flairimage));
     ventdistfeats = zeros(numel(index_numbers),numel(thresholds));
     lesvolfeats = zeros(numel(index_numbers),numel(thresholds));

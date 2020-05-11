@@ -10,7 +10,7 @@ function [flairintfeats, ventdistfeats, lesvolfeats, index_numbers, index_mask] 
 %   index_mask - Voronoi tessellation index mask
 %   index_numbers - Voronoi tessellation region indices
 
-    thresholds = 0:0.05:0.95;    
+    thresholds =dlmread('thresholds.dat');    
     fprintf('Extra details');
     %size(lesionmask)
     %numel(flairimage)

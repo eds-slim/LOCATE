@@ -16,6 +16,7 @@ function LOCATE_LOO_testing(varargin)
 %                  (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feature_select = [0, 1, 1])
 %    - verbose (0 or 1)
 
+
 if nargin > 0
     training_image_directory_name = varargin{1};
 end
