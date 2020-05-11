@@ -90,17 +90,16 @@ end
 xsplit = regexp(xdir(subj).name,'_BIANCA_LPM','split');
 xfeats = dir(sprintf('%s/%s_feature_*',test_image_directory_name,xsplit{1}));
 
-lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',test_image_directory_name,xsplit{1});
-lesionmask = read_avw(lesionmaskfile);
-
 features_fn = sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1});
 if exist(features_fn,'file')
     load(features_fn)
 else
     flairimage = cell(numel(xfeats),1);
     % Loading the image files
+    lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',test_image_directory_name,xsplit{1});
     biancamaskfile = sprintf('%s/%s_biancamask.nii.gz',test_image_directory_name,xsplit{1});
     brainmaskfile = sprintf('%s/%s_brainmask.nii.gz',test_image_directory_name,xsplit{1});
+    lesionmask = read_avw(lesionmaskfile);
     biancamask = read_avw(biancamaskfile);
     brainmask = read_avw(brainmaskfile);
     
@@ -181,11 +180,15 @@ if verbose
 end
 
 
+
+
 % Extract the corresponding test features and index masks from cell
 % arrays
 testflairfeatmat = imgfeatmats{1};
 testventdistfeatmat = ventdistfeatmats{1};
 testlesvolfeatmat = lesvolfeatmats{1};
+index_mask = index_maps{1};
+index_numbers = index_indices_list{1};
 
 voronoi_test_features_all = [testventdistfeatmat,testlesvolfeatmat,testflairfeatmat];
 if verbose
@@ -212,6 +215,11 @@ for ind = 1:numel(index_numbers)
 end
 
 
+lesion_masks{testsubj} = final_binary_lesionmask;
+thresholds{testsubj} = testmeanbestthrs;
+thresholdmap{testsubj} = threshold_mask;
+indexmaps{testsubj} = index_mask;
+
 % Saving the images
 save_avw(index_mask,sprintf('%s/%s_indexmap.nii.gz',results_directory,xsplit{1}),'f',[1 1 1]);
 save_avw(threshold_mask,sprintf('%s/%s_thresholdsmap.nii.gz',results_directory,xsplit{1}),'f',[1 1 1]);
@@ -221,6 +229,13 @@ save(sprintf('%s/%s_LOCATE_thresholds.mat',results_directory,xsplit{1}),'testmea
 copying_image_geometry(lesionmaskfile, sprintf('%s/%s_indexmap.nii.gz',results_directory,xsplit{1}), verbose);
 copying_image_geometry(lesionmaskfile, sprintf('%s/%s_thresholdsmap.nii.gz',results_directory,xsplit{1}), verbose);
 copying_image_geometry(lesionmaskfile, sprintf('%s/%s_BIANCA_LOCATE_binarylesionmap.nii.gz',results_directory,xsplit{1}), verbose);
+
+
+
+
+
+
+
 
 end
 

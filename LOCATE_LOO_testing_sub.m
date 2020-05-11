@@ -16,25 +16,20 @@ function LOCATE_LOO_testing(varargin)
 %                  (e.g. If FLAIR is the only modality provided and distance from ventricles is not needed then feature_select = [0, 1, 1])
 %    - verbose (0 or 1)
 
-addpath('MATLAB');
-
-training_image_directory_name = pwd;
-
 if nargin > 0
     training_image_directory_name = varargin{1};
 end
 
 % Assigning the Root directories
-root_data_directory = training_image_directory_name;
 results_directory = sprintf('%s/LOCATE_LOO_results_directory',training_image_directory_name);
 
-xdir = dir(sprintf('%s/*_BIANCA_LPM.nii.gz',root_data_directory));
+xdir = dir(sprintf('%s/*_BIANCA_LPM.nii.gz',training_image_directory_name));
 
 if numel(xdir) == 0
     error('Cannot find any input image. Please check your training_image_directoy_name');
 else
     xsplit = regexp(xdir(1).name,'_BIANCA_LPM','split');
-    xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory,xsplit{1}));
+    xfeats = dir(sprintf('%s/%s_feature_*',training_image_directory_name,xsplit{1}));
     if numel(xfeats) == 0
         fprintf('Warning: No feature modality found. Can extract only volume and ventricle distance \n');
     end
@@ -89,7 +84,7 @@ if verbose
 end
 
 xsplit = regexp(xdir(subj).name,'_BIANCA_LPM','split');
-xfeats = dir(sprintf('%s/%s_feature_*',root_data_directory, xsplit{1}));
+xfeats = dir(sprintf('%s/%s_feature_*',training_image_directory_name, xsplit{1}));
 
 does_file_exist = exist(sprintf('%s/LOCATE_features_%s.mat',results_directory,xsplit{1}),'file');
 
@@ -98,10 +93,10 @@ if does_file_exist == 2
 else
     flairimage = cell(numel(xfeats),1);
     % Loading the image files
-    lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',root_data_directory,xsplit{1});
-    manualmaskfile = sprintf('%s/%s_manualmask.nii.gz',root_data_directory,xsplit{1});
-    biancamaskfile = sprintf('%s/%s_biancamask.nii.gz',root_data_directory,xsplit{1});
-    brainmaskfile = sprintf('%s/%s_brainmask.nii.gz',root_data_directory,xsplit{1});
+    lesionmaskfile = sprintf('%s/%s_BIANCA_LPM.nii.gz',training_image_directory_name,xsplit{1});
+    manualmaskfile = sprintf('%s/%s_manualmask.nii.gz',training_image_directory_name,xsplit{1});
+    biancamaskfile = sprintf('%s/%s_biancamask.nii.gz',training_image_directory_name,xsplit{1});
+    brainmaskfile = sprintf('%s/%s_brainmask.nii.gz',training_image_directory_name,xsplit{1});
     lesionmask = read_avw(lesionmaskfile);
     manualmask = read_avw(manualmaskfile);
     biancamask = read_avw(biancamaskfile);
@@ -109,18 +104,18 @@ else
     
     if feature_selection_cols(1) == 0
         try
-            ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',root_data_directory,xsplit{1});
+            ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',training_image_directory_name,xsplit{1});
             ventdistmap = read_avw(ventdistmapfile);
         catch
             ventdistmap = zeros(size(lesionmask));
         end
     else
-        ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',root_data_directory,xsplit{1});
+        ventdistmapfile = sprintf('%s/%s_ventdistmap.nii.gz',training_image_directory_name,xsplit{1});
         ventdistmap = read_avw(ventdistmapfile);
     end
     
     for subj_feat_no = 1:numel(xfeats)
-        flairimagefile = sprintf('%s/%s',root_data_directory,xfeats(subj_feat_no).name);
+        flairimagefile = sprintf('%s/%s',training_image_directory_name,xfeats(subj_feat_no).name);
         flairimage{subj_feat_no} = read_avw(flairimagefile);
     end
     
