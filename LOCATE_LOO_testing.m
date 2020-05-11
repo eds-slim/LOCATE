@@ -143,6 +143,7 @@ for subj = 1:numel(xdir)
         numel(index_numbers)
         
         index_mask = imresizen(index_mask,inv_factor,'nearest');
+        
         if verbose
             fprintf('Resizing of Index mask done! \n')
         end

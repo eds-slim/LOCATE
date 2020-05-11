@@ -21,21 +21,23 @@ function [flairintfeats, ventdistfeats, lesvolfeats, minbestthr_values, maxbestt
     meanbestthr_values = zeros(numel(index_numbers),1);
     fprintf('Initiating LOCATE feature extraction...')
     % Iterating over Voronoi regions
+
     for ind = 1:numel(index_numbers)
+        waitbar(ind/numel(index_numbers))
         voronoi_region_mask = index_mask == index_numbers(ind);
         lesionmask_voronoi = lesionmask.*double(voronoi_region_mask);
         manualmask_voronoi = single(manualmask).*double(voronoi_region_mask);
         flairint_values = zeros(numel(flairimage),numel(thresholds));
         ventdist_values = zeros(1,numel(thresholds));
         lesvol_values = zeros(1,numel(thresholds));
-        size(lesvol_values)
+        %size(lesvol_values)
         diceindex_values = zeros(1,numel(thresholds));
-        size(flairint_values)
+        %size(flairint_values)
         % Applying thresholds and calculating features and dice indices for each thresholds
         for thr = 1:numel(thresholds)
             binary_lesion_mask = lesionmask_voronoi > thresholds(thr);
-            size(binary_lesion_mask)
-            size(flairimage)
+            %size(binary_lesion_mask)
+            %size(flairimage)
             for img_no = 1:numel(flairimage)
                 flair_image = flairimage{img_no};
                 flairint_values(img_no,thr) = mean(flair_image(binary_lesion_mask));
@@ -67,4 +69,7 @@ function [flairintfeats, ventdistfeats, lesvolfeats, minbestthr_values, maxbestt
         ventdistfeats(ind,:) = ventdist_values;
         lesvolfeats(ind,:) = lesvol_values;
     end
+    F=findall(0,'type','figure','tag','TMWWaitbar');
+    delete(F)
+end
     

@@ -10,9 +10,7 @@ function [lesionmask, index_mask, index_numbers] =  LOCATE_Voronoi_tessellation_
 
     % Smoothing the images with Gaussian kernel to remove spurious lesion
     % voxels
-  
-    global temp
-    
+      
     lesionmask_smooth = imgaussfilt3(lesionmask,1,'FilterSize',5);
     
     % Determine local maxima of the lesion mask
@@ -35,6 +33,7 @@ function [lesionmask, index_mask, index_numbers] =  LOCATE_Voronoi_tessellation_
     voronoi_area = zeros(1,size(indices,1)-size(regmax_centroid_dummy,1));
     
     % Iterating over voronoi regions
+    fprintf('Number of Voronoi regions (loop): %d', size(indices,1))
     for ind = size(regmax_centroid_dummy,1)+1:size(indices,1) %
         waitbar(ind/size(indices,1))
         temp = zeros(size(lesionmask));
@@ -73,13 +72,16 @@ function [lesionmask, index_mask, index_numbers] =  LOCATE_Voronoi_tessellation_
         
 
     end
+    F=findall(0,'type','figure','tag','TMWWaitbar');
+    delete(F)
+    
      % Resizing the images back to the original dimensions
-     lesionmask = imresizen(lesionmask,inv_factor);
-     biancamask = imresizen(single(biancamask),inv_factor);
-     index_mask = imresizen(index_mask,inv_factor,'nearest');
-     index_mask = round(index_mask);
-     index_mask = index_mask.*(biancamask);
-     index_numbers = setdiff(union(index_mask(:),[]),0);
+     % lesionmask = imresizen(lesionmask,inv_factor);
+     % biancamask = imresizen(single(biancamask),inv_factor);
+     % index_mask = imresizen(index_mask,inv_factor,'nearest');
+     % index_mask = round(index_mask);
+     % index_mask = index_mask.*(biancamask);
+      index_numbers = setdiff(union(index_mask(:),[]),0);
     
 end
 

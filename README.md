@@ -3,4 +3,4 @@ Fork of the LOCATE (https://git.fmrib.ox.ac.uk/vaanathi/LOCATE-BIANCA) extension
 Original under https://git.fmrib.ox.ac.uk/vaanathi/LOCATE-BIANCA
 
 # Changes
- Optimizations for parallel execustion of LOO, training, and testing on HPC.
+ Optimizations for parallel execution of LOO, training, and testing on HPC.
