@@ -121,7 +121,7 @@ else
     
     % Getting image dimensions and determining up/downsampling factor
     dim = size(lesionmask);
-    factor = 150./dim; %floor(max(dim)./dim); %
+    factor = floor(max(dim)./dim); %200./dim; %
     inv_factor = 1./factor;
     
     % Up/downsampling the images
